@@ -1,0 +1,615 @@
+{
+  "name": "tg advanced",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -672,
+        0
+      ],
+      "id": "d1cf61b5-0940-47a2-ab82-ed355bfe3b50",
+      "name": "Telegram Trigger",
+      "webhookId": "a39ea611-eca3-4720-8819-6cd5dc35c6a8",
+      "credentials": {
+        "telegramApi": {
+          "id": "s8KVwAe9Ya2hOzG9",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "=ex",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "id": "30945385-11bd-4eb1-ad46-5a561c2a3808"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "43ee6d59-116d-40c6-ab0e-c4d34078365e",
+                    "leftValue": "={{ $json.message.voice.file_id }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -496,
+        0
+      ],
+      "id": "b8ba8717-f951-404f-b8c7-eac2f59b58cf",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1627fb3f-a870-4140-adaf-b41765b21b77",
+              "name": "text",
+              "value": "={{ $json.message.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -112,
+        -16
+      ],
+      "id": "2c10ddd7-caf4-47bf-af6c-d6a98c0c3669",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "options": {
+          "systemMessage": "=# Role\nYou are an assistant with access to multiple tools.\n\n# Behavior\nYou respond concisely and succinctly in a friendly and approachable style.\n\n# Date and Time\n{{ $now }}\n\n# Tools\nYou have access to multiple tools and always use the appropriate one depending on the task.\n\n## Gmail_Tool\nUse this tool every time you need to do something with emails.  \nIf you send mails, you sign every email with \"Nathe\" and never use empty placeholders for names.  \nEnsure that emails are well-formatted with a proper body.\n\n## Calendar_Tool\nUse this tool every time you need to do something with the calendar.\n\n## search_agent\nUse this tool to search the web, Hacker News, and Wikipedia.\n\n## x_posts\nUse this tool to post on X.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        64,
+        -16
+      ],
+      "id": "03236c77-b119-453e-a584-b44ef19b1cc0",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.voice.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -416,
+        416
+      ],
+      "id": "1cefa644-1672-4ebd-82b0-5f4e3ebd3598",
+      "name": "Get a file",
+      "webhookId": "ceb01ebb-1fd7-4f1c-80ed-5e5665130cdc",
+      "credentials": {
+        "telegramApi": {
+          "id": "s8KVwAe9Ya2hOzG9",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-pro",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-pro"
+        },
+        "inputType": "binary",
+        "simplify": "={{ true }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -304,
+        144
+      ],
+      "id": "c4b8799b-ed25-4377-a4e0-8341dbdaa780",
+      "name": "Transcribe a recording",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "8UyIqPuQjyC2479P",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d4bc3945-90ca-455a-88bf-c98c0c764c4d",
+              "name": "text",
+              "value": "={{ $json.content.parts[0].text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -112,
+        144
+      ],
+      "id": "9ddc4188-706f-4ccb-be51-d0afd5e493a1",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.chat.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        160,
+        224
+      ],
+      "id": "b1ac19c4-3c8d-4fb9-928a-0397ff9b6cbd",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": "={{ false }}",
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        864,
+        -16
+      ],
+      "id": "28bccdfb-f347-4eb4-aa6a-c2561be1159b",
+      "name": "Send a text message",
+      "webhookId": "adb7ab55-248f-484a-b2c2-4679694f9aeb",
+      "credentials": {
+        "telegramApi": {
+          "id": "s8KVwAe9Ya2hOzG9",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        64,
+        480
+      ],
+      "id": "790095aa-9ffa-4f73-9a90-3f0d705dcb30",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ePTTLiwYhEiCJj4H",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the raw output\nlet text = $input.first().json.text\n\n// Remove all asterisks if needed\ntext = text.replace(/\\*/g, '');\n\n// Add a blank line between each item (assuming each item starts with a name followed by ':')\nlet formatted = text.split('\\n').map(line => line.trim()).filter(Boolean).join('\\n\\n');\n\nreturn [\n  {\n    json: {\n      output: formatted\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        688,
+        -16
+      ],
+      "id": "946bc570-099f-4581-9a84-d66d59b4dfd0",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "description": "call this tool to search from wikipedia , hackernews and the web.",
+        "workflowId": {
+          "__rl": true,
+          "value": "00nm6sma1CrYXbRG",
+          "mode": "list",
+          "cachedResultName": "tg subworkflow news"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        528,
+        480
+      ],
+      "id": "a41e0220-7ccd-499c-af3b-f7568ce08bab",
+      "name": "search_agent"
+    },
+    {
+      "parameters": {
+        "description": "call this tool to do calendar tasks",
+        "workflowId": {
+          "__rl": true,
+          "value": "SxGkboxFfeC8ymK7",
+          "mode": "list",
+          "cachedResultName": "sub calendar agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        384,
+        480
+      ],
+      "id": "1047030f-bdd7-41ad-bf08-c0b311038956",
+      "name": "sub calendar agent"
+    },
+    {
+      "parameters": {
+        "description": "Call this tool to do email stuff",
+        "workflowId": {
+          "__rl": true,
+          "value": "q5raeoYxWrPn05cQ",
+          "mode": "list",
+          "cachedResultName": "sub mail workflow"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        672,
+        464
+      ],
+      "id": "74eae8e6-72c0-492c-a7c9-3b3111df194d",
+      "name": "sub mail workflow"
+    },
+    {
+      "parameters": {
+        "description": "call this tool to prepare x posts",
+        "workflowId": {
+          "__rl": true,
+          "value": "qWgR1bTcHKZRSeT2",
+          "mode": "list",
+          "cachedResultName": "x_posts"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        272,
+        400
+      ],
+      "id": "f08fd3de-685e-48e1-8d6f-7311332e21f6",
+      "name": "x_posts"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a sharp-tongued, quick-witted AI with a gift for playful roasts. Your answers are useful but laced with clever sarcasm and light condescension—like a stand-up comic who knows they’re the smartest person in the room. Keep the burns friendly, the humor snappy, and never cross into cruelty.\n\nAlways base your reply directly on the content in {{ $json.output }}, working it seamlessly into your sarcastic, witty style.",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        416,
+        -16
+      ],
+      "id": "d8c6bab0-b6a2-4eff-9dd2-ecb38ba42f3b",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        416,
+        160
+      ],
+      "id": "710a3e92-1c55-4327-8684-a75360ea9ac4",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ePTTLiwYhEiCJj4H",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "Transcribe a recording",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe a recording": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "search_agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sub calendar agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sub mail workflow": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "x_posts": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "c3dc4c65-df6a-47ad-b3d7-81ab69254cf7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1754f794c53fad2bfe6db86c90811c562737e17002dd76c1e1c2eedd3f76e240"
+  },
+  "id": "V3dm7Z5U5wb7qp3z",
+  "tags": []
+}
