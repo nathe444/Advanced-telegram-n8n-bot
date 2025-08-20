@@ -37,8 +37,7 @@ A production-ready **Telegram bot** built with **n8n** that routes user intents 
 ### 2) News / Search Agent — `tg subworkflow news.json`
 - **Goal:** Handle news/search queries and return concise answers (optionally with sources).
 - **Typical nodes:** Text parsing → HTTP/API request (News/Serp) → format summary → return to parent.
-- **Return shape:** `{ answer: "...", sources: [...] }` (adapt to your n8n data structure).
-
+- 
 **Screenshot:**
 
 ![News/Search Agent](./search_agent.png)
@@ -48,7 +47,6 @@ A production-ready **Telegram bot** built with **n8n** that routes user intents 
 ### 3) Calendar Agent — `sub calendar agent.json`
 - **Goal:** Create/find calendar events (e.g., “schedule design sync tomorrow 3pm”).
 - **Typical nodes:** Extract title/date/time → Google Calendar (Create/Update/Find) → format confirmation.
-- **Return shape:** `{ status: "created", start: "...", end: "...", link: "..." }`.
 
 **Screenshot:**
 
@@ -59,7 +57,6 @@ A production-ready **Telegram bot** built with **n8n** that routes user intents 
 ### 4) Mail Agent — `sub mail workflow.json`
 - **Goal:** Send emails (confirmations, summaries, alerts).
 - **Typical nodes:** Compose subject/body → Gmail/SMTP node → capture status.
-- **Return shape:** `{ delivered: true, to: "user@example.com" }`.
 
 **Screenshot:**
 
@@ -70,7 +67,6 @@ A production-ready **Telegram bot** built with **n8n** that routes user intents 
 ### 5) Posts → Google Sheets Agent — `x_posts.json`
 - **Goal:** Accept or generate content (e.g., social copy) and **log it to Google Sheets** (content calendar).
 - **Typical nodes:** Input/post text → transform (optional) → Google Sheets (Append).
-- **Return shape:** `{ rowId: ..., sheet: "...", text: "..." }`.
 
 **Screenshot:**
 
@@ -95,7 +91,7 @@ A production-ready **Telegram bot** built with **n8n** that routes user intents 
 2. `sub mail workflow.json`  
 3. `tg subworkflow news.json`  
 4. `x_posts.json`  
-5. `tg advanced.json` *(import main last, so Execute Workflow can link to existing sub-workflows easily)*
+5. `tg advanced.json` 
 
 ### Credentials
 Create/select credentials for:
@@ -104,8 +100,6 @@ Create/select credentials for:
 - **Email**: Gmail OAuth or SMTP (host, port, user, password).
 - **News/Search**: API key in the HTTP Request node (or dedicated integration node).
 
-### Environment (self-hosted)
-If n8n sits behind a proxy or tunnel, set your public webhook base (examples):
 ## 🛠️ Extending the System
 
 - **Add a new agent**  
@@ -155,3 +149,4 @@ MIT — feel free to use and adapt.
 **Nathe (Natnael Mulugeta)**  
 - Upwork: https://www.upwork.com/freelancers/~019f47e60d13168603  
 - Email: natnaelm552@gmail.com
+
